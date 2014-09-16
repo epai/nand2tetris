@@ -1,0 +1,82 @@
+/**
+ * Implements a graphic analog clock.  A graphic analog clock
+ * uses the Clock class logic, and updates every second to
+ * simulate an actual analog clock.  It also has methods for
+ * drawing, erasing, and updating.
+ */
+
+class Analog {
+	// Location of center of clock
+	static int CENTER_X, CENTER_Y;
+
+	static int RADIUS, FRAME_WIDTH, CENTER_RADIUS;
+
+	// size of second, minute, and hour hand
+	static int SEC_SIZE, MIN_SIZE, HOUR_SIZE;
+
+	// Location of the second hand
+	field int sec_x, sec_y;
+
+	// Location of minute hand
+	field int min_x, min_y;
+
+	//Location of hour hand
+	field int hour_x, hour_y;
+
+	//Clock
+	field Clock c;
+
+	/** Constructs a new Analog Clock */
+	constructor Analog new() {
+
+		let CENTER_X = 255;
+		let CENTER_Y = 127;
+
+		let RADIUS = 100;
+		let FRAME_WIDTH = 2;
+		let CENTER_RADIUS = 3;
+
+		let SEC_SIZE = 95;
+		let MIN_SIZE = 80;
+		let HOUR_SIZE = 60;
+		do drawClock();
+
+		return this;
+	}
+
+	method void drawClock(){
+		// draw clock frame
+		do Screen.setColor(true);
+		do Screen.drawCircle(CENTER_X, CENTER_Y, RADIUS);
+		do Screen.setColor(false);
+		do Screen.drawCircle(CENTER_X, CENTER_Y, RADIUS-FRAME_WIDTH);
+
+		// draw center
+		do Screen.setColor(true);
+		do Screen.drawCircle(CENTER_X, CENTER_Y, CENTER_RADIUS);
+
+		// draw clock face (arbitrary choices)
+		do Screen.setColor(true);
+		do Screen.drawLine(255, 223, 255, 218); // 12
+		do Screen.drawLine(255, 31, 255, 34); // 6
+		do Screen.drawLine(159, 127, 163, 127); // 9
+		do Screen.drawLine(351, 127, 348, 127); // 3
+
+		return;
+	}
+
+	method void update(){
+
+	}
+	method void drawSecond(){
+		var int 
+	}
+
+
+
+
+
+
+
+
+}

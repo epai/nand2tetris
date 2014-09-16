@@ -1,0 +1,44 @@
+/**
+ * The Clock class initializes a new Clock object, which stores
+ * the current hour, minute, and second, and provides methods for
+ * updating the clock every second.
+ *
+ * Clocks are represented in the 24 hour time 
+ * (e.g. 00:00:00 is midnight)
+ */
+
+class Clock {
+	field int hour, minute, second;
+
+	constructor Clock new(int h, int m, int s) {
+		let hour = h;
+		let minute = m;
+		let second = s;
+		return this;
+	}
+
+	// updates the clock by one second, adjusting hour, minute, and
+	// second accordingly.
+	method void tick(){
+		let second = second + 1;
+		if (second > 60 | second = 60){
+			let minute = minute + 1;
+			let second = 0;
+		}
+		if (minute > 60 | second = 60){
+			let hour = hour + 1;
+			let minute = 0;
+		}
+		if (hour > 12 | hour = 12){
+			let hour = 0;
+		}
+		return;
+	}
+
+	function boolean isValidTime(int h, int m, int s){
+		if (h < 0 | h > 24 | m < 0 | m > 59 | s < 0 | s > 59){
+			return false;
+		}
+		return true;
+	}
+}

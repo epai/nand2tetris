@@ -1,0 +1,87 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/05/CPU.hdl
+
+/**
+ * The Central Processing unit (CPU).
+ * Consists of an ALU and a set of registers, designed to fetch and 
+ * execute instructions written in the Hack machine language.
+ * In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM=0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time unit. If reset=1 then the 
+ * CPU jumps to address 0 (i.e. sets pc=0 in next time unit) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset=1) or continue executing
+                         // the current program (reset=0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write into M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // Put your code here:
+    Not(in=instruction[15], out=aInstr);
+    Not(in=aInstr, out=cInstr);
+
+    And(a=cInstr, b=instruction[5], out=aLoad1);
+    Or(a=aInstr, b=aLoad1, out=loadAReg);
+    Mux16(a[15]=false, a[0..14]=ALUout, b[15]=false, 
+          b[0..14]=instruction[0..14], sel=aInstr, out=Ain);
+    ARegister(in=Ain, load=loadAReg, out=Aout);
+    And16(a=Aout, b=true, 
+          out[15]=empty3, out[0..14]=addressM);
+
+    And(a=instruction[4], b=cInstr, out=loadDReg);
+    Mux16(a=Aout, b=inM, sel=instruction[12], out=ALUin1);
+    DRegister(in[15]=ng, in[0..14]=ALUout, load=loadDReg, out=ALUin2);
+
+    ALU(x=ALUin2, y=ALUin1,
+        zx=instruction[11], nx=instruction[10], 
+        zy=instruction[9], ny=instruction[8],
+        f=instruction[7], no=instruction[6],
+        out[0..14]=ALUout, out[15]=empty5, zr=zr, ng=ng);
+    
+    Or(a=zr, b=ng, out=p1);
+    Not(in=p1, out=pos);
+    And16(a[15]=ng, a[0..14]=ALUout, b=true, out=outM);
+
+    And(a=cInstr, b=instruction[3], out=writeM);
+
+    And(a=instruction[0], b=pos, out=a1); //pos
+    And(a=instruction[1], b=zr, out=a2);  //zr
+    And(a=instruction[2], b=ng, out=a3);  //ng
+    Or(a=a2, b=a3, out=a4);               //zr | ng
+    Or(a=a1, b=a3, out=a5);               //pos | ng
+    Or(a=a2, b=a1, out=a6);               //zr | pos
+    Or(a=a4, b=a1, out=a7);               //zr | pos | neg
+    Or8Way(in[0]=false, in[1]=a1, in[2]=a2, in[3]=a3, in[4]=a4,
+           in[5]=a5, in[6]=a6, in[7]=a7, out=a8);
+    And(a=a8, b=cInstr, out=PCloadBit);
+
+    PC(in=Aout, load=PCloadBit, inc=true, 
+       reset=reset, out[15]=empty4, out[0..14]=pc);
+
+
+
+
+}

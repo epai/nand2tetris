@@ -1,0 +1,29 @@
+// Eric Pai
+// February 2014
+//
+// Made as part of the Nand2Tetris Project
+// Programmed in the Jack programming language
+
+/**
+ * The Main class initializes an analog clock and starts it.
+ */
+class Main {
+	function void main() {
+		var Analog clock;
+		var char key;
+		var boolean exit;
+
+		let clock = Analog.new();
+
+		let exit = false;
+
+		while (~exit) {
+			let key = Keyboard.keyPressed();
+
+			if (key = 132) {
+				let exit = true;
+			}
+		}
+		return;
+	}
+}
